@@ -26,15 +26,7 @@ export const generateToken = (
 export const signup = async (
   data: SignupInput
 ) => {
-  const allowedRoles = [
-    UserRole.MERCHANT,
-    UserRole.RESELLER,
-  ];
-
-  if (!allowedRoles.includes(data.role)) {
-    throw new Error("Invalid signup role");
-  }
-
+  
   const existingUser = await User.findOne({
     email: data.email,
   });

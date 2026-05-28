@@ -11,11 +11,13 @@ export const signupSchema = z.object({
   phone: z.string().min(10),
 
   password: z.string().min(6),
-
   role: z.enum([
-    UserRole.MERCHANT,
-    UserRole.RESELLER,
-  ]),
+  UserRole.MERCHANT,
+  UserRole.RESELLER,
+  UserRole.MASTER_ADMIN,
+  UserRole.SUB_ADMIN,
+  UserRole.PG_ADMIN,
+]),
 });
 
 export const signinSchema = z.object({
