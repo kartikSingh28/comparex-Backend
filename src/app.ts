@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
+import pgRouter from "./routes/pg.routes";
 
 dotenv.config();
 
@@ -19,5 +20,7 @@ app.use("/api/auth", authRoutes);
 app.get("/health", (_req, res) => {
   res.json({ success: true, message: "Comparex API is running" });
 });
+
+app.use("/api/pg", pgRouter);
 
 export default app;
