@@ -4,6 +4,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import pgRouter from "./routes/pg.routes";
+import leadRouter from "./routes/lead.routes";
 
 dotenv.config();
 
@@ -22,5 +23,6 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/pg", pgRouter);
+app.use("/api/leads",leadRouter);
 
 export default app;
