@@ -66,3 +66,22 @@ export async function submitLead(
     });
   }
 }
+
+export async function getAllLeads(req:Request,res:Response){
+    try{
+        const leads= await Lead.find()
+        .populate("assignedPgId","name")
+        .sort({createdAt:-1});
+
+        return res.status(200).json({
+            success:true,
+            count:leads.length,
+            data:leads,
+        });
+    }catch(error:any){
+        return res.status(500).json({
+            success:false,
+            message:error.message || "Failed to fetch leads",
+        });
+    }
+}
