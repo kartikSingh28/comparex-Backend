@@ -194,3 +194,68 @@ export async function assignLeads(req:Request,res:Response){
     });
   }
 }
+
+//update lead status
+export async function updateLeadStatus(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { id } = req.params;
+    const { status, remarks } = req.body;
+
+    const allowedStatuses: LeadStatus[] = [
+      LeadStatus.LIVE,
+      LeadStatus.REJECTED,
+    ];
+
+    if (!allowedStatuses.includes(status as LeadStatus)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid status. Allowed values: LIVE, REJECTED",
+      });
+    }
+
+    if (!remarks) {
+      return res.status(400).json({
+        success: false,
+        message: "Remarks are required",
+      });
+    }
+
+    const lead = await Lead.findById(id);
+
+    if (!lead) {
+      return res.status(404).json({
+        success: false,
+        message: "Lead not found",
+      });
+    }
+
+    if (lead.status !== LeadStatus.ASSIGNED) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Only ASSIGNED leads can be marked LIVE or REJECTED",
+      });
+    }
+
+    lead.status = status as LeadStatus;
+    lead.remarks = remarks;
+
+    await lead.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Lead marked as ${status}`,
+      data: lead,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message:
+        error.message || "Failed to update lead status",
+    });
+  }
+}
