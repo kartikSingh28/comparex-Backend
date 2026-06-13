@@ -1,5 +1,5 @@
 import {Router } from "express";
-import { submitLead,getAllLeads,qualifyLeads } from "../controllers/lead.controller";
+import { submitLead,getAllLeads,qualifyLeads,assignLeads } from "../controllers/lead.controller";
 import {authenticate} from "../middlewares/authMiddleware";
 import {authorize} from "../middlewares/authorize";
 const leadRouter =Router();
@@ -12,5 +12,12 @@ leadRouter.patch(
   authenticate,
   authorize("lead:qualify"),
   qualifyLeads
+);
+
+leadRouter.patch(
+  "/:id/assign",
+  authenticate,
+  authorize("lead:assign-to-pg"),
+  assignLeads
 );
 export default leadRouter;

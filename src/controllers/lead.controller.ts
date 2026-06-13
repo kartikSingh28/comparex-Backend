@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Lead } from "../models/lead.model";
 import { submitLeadSchema } from "../validators/lead.validator";
 import { LeadStatus } from "../types/enum";
+import {PaymentGateway} from "../models/paymentGateway.model";
 
 export async function submitLead(
   req: Request,
@@ -133,6 +134,63 @@ try {
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to qualify lead",
+    });
+  }
+}
+//assign lead 
+
+export async function assignLeads(req:Request,res:Response){
+  try {
+    const { id } = req.params;
+    const { pgId } = req.body;
+
+    if (!pgId) {
+      return res.status(400).json({
+        success: false,
+        message: "pgId is required",
+      });
+    }
+
+    const lead = await Lead.findById(id);
+
+    if (!lead) {
+      return res.status(404).json({
+        success: false,
+        message: "Lead not found",
+      });
+    }
+
+    const pg = await PaymentGateway.findById(pgId);
+
+    if (!pg) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment Gateway not found",
+      });
+    }
+
+    // Only QUALIFIED leads can be assigned
+    if (lead.status !== LeadStatus.QUALIFIED) {
+      return res.status(400).json({
+        success: false,
+        message: "Only QUALIFIED leads can be assigned to a Payment Gateway",
+      });
+    }
+
+    lead.assignedPgId = pg._id;
+    lead.status = LeadStatus.ASSIGNED;
+
+    await lead.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Lead assigned to Payment Gateway successfully",
+      data: lead,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to assign lead",
     });
   }
 }
