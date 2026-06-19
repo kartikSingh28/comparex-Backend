@@ -1,7 +1,8 @@
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import { v4 as uuidv4 } from "uuid"
+import { Reseller } from "../models/reseller.model";
 import { User } from "../models/user.model";
 import { SignupInput, SigninInput } from "../validators/auth.validator"
 
@@ -44,6 +45,14 @@ export const signup = async (
     ...data,
     password: hashedPassword,
   });
+  if (data.role === UserRole.RESELLER) {
+  const referralCode = "REF" + uuidv4().slice(0, 8).toUpperCase();
+  await Reseller.create({
+    userId: user._id,
+    referralCode,
+    businessName: data.businessName,
+  });
+}
 
   const token = generateToken(
     user._id.toString(),

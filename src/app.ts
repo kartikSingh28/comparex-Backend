@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import pgRouter from "./routes/pg.routes";
 import leadRouter from "./routes/lead.routes";
-
+import resellerRoutes from "./routes/reseller.routes";
 dotenv.config();
 
 const app = express();
@@ -24,5 +24,6 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/pg", pgRouter);
 app.use("/api/leads",leadRouter);
+app.use("/api/reseller", resellerRoutes);
 
 export default app;

@@ -31,6 +31,7 @@ export const PERMISSIONS: Record<string, UserRole[]> = {
 
   // Reseller
   "reseller:view-own-leads":   [UserRole.MASTER_ADMIN, UserRole.RESELLER],
+  "reseller:view-gmv":         [UserRole.MASTER_ADMIN, UserRole.RESELLER],
   "reseller:view-commission":  [UserRole.MASTER_ADMIN, UserRole.RESELLER],
   "reseller:upload-kyc":       [UserRole.MASTER_ADMIN, UserRole.RESELLER],
 

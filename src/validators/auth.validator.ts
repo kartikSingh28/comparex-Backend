@@ -18,6 +18,7 @@ export const signupSchema = z.object({
   UserRole.SUB_ADMIN,
   UserRole.PG_ADMIN,
 ]),
+ businessName: z.string().optional(), 
 });
 
 export const signinSchema = z.object({
