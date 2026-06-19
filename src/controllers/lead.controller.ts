@@ -3,6 +3,7 @@ import { Lead } from "../models/lead.model";
 import { submitLeadSchema } from "../validators/lead.validator";
 import { LeadStatus } from "../types/enum";
 import {PaymentGateway} from "../models/paymentGateway.model";
+import {Reseller} from "../models/reseller.model";
 
 export async function submitLead(
   req: Request,
@@ -10,6 +11,7 @@ export async function submitLead(
 ) {
   try {
     const validData = submitLeadSchema.parse(req.body);
+    const ref = req.query.ref as string;
 
     const existingLead = await Lead.findOne({
       $or: [
@@ -24,32 +26,39 @@ export async function submitLead(
         message: "Lead already exists",
       });
     }
+    let reseller = null;
+
+if (ref) {
+  reseller = await Reseller.findOne({
+    referralCode: ref,
+  });
+}
 
     const tcAcceptedIp =
       (req.headers["x-forwarded-for"] as string) ||
       req.socket.remoteAddress ||
       "unknown";
+      const lead = await Lead.create({
+  merchantName: validData.merchantName,
+  businessName: validData.businessName,
 
-    const lead = await Lead.create({
-      merchantName: validData.merchantName,
-      businessName: validData.businessName,
+  email: validData.email,
+  phone: validData.phone,
 
-      email: validData.email,
-      phone: validData.phone,
+  businessCategory: validData.businessCategory,
 
-      businessCategory: validData.businessCategory,
+  estimatedMonthlyVolume:
+    validData.estimatedMonthlyVolume,
 
-      estimatedMonthlyVolume:
-        validData.estimatedMonthlyVolume,
+  status: LeadStatus.NEW,
 
-      status: LeadStatus.NEW,
+  resellerId: reseller?._id,
+  isOrganic: !reseller,
 
-      isOrganic: true,
-
-      tcAccepted: true,
-      tcAcceptedAt: new Date(),
-      tcAcceptedIp,
-    });
+  tcAccepted: true,
+  tcAcceptedAt: new Date(),
+  tcAcceptedIp,
+});
 
     return res.status(201).json({
       success: true,
